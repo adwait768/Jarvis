@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#10121A">
+<title>Trevor</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #10121A;
+    --panel: #191C27;
+    --panel-raised: #20232F;
+    --line: #2B2F3D;
+    --text: #ECEAE3;
+    --text-muted: #8A8D9A;
+    --accent: #E0A458;
+    --accent-dim: #7A6339;
+    --danger: #C97064;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:var(--bg); color:var(--text);
+    font-family:'Space Grotesk', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior:none;
+  }
+  #app{
+    display:flex; flex-direction:column;
+    height:100vh; height:100dvh;
+    max-width:520px; margin:0 auto;
+    background:var(--bg);
+  }
+  header{ padding:18px 20px 14px; border-bottom:1px solid var(--line); flex-shrink:0; }
+  header .name{ font-family:'Fraunces', serif; font-size:26px; font-weight:600; letter-spacing:0.2px; }
+  header .sub{ color:var(--text-muted); font-size:13px; margin-top:2px; }
+
+  .hfStatus{
+    display:none; text-align:center; font-size:12.5px; color:var(--accent);
+    padding:8px 12px; background:var(--panel); border-bottom:1px solid var(--line);
+    flex-shrink:0; letter-spacing:0.2px;
+  }
+  .hfStatus.dot::before{ content:'● '; }
+
+  .view{ flex:1; overflow-y:auto; display:none; padding:16px; }
+  .view.active{ display:flex; flex-direction:column; }
+
+  #chatView{ gap:12px; }
+  .msg{ max-width:82%; padding:10px 14px; border-radius:16px; line-height:1.4; font-size:15px; white-space:pre-wrap; }
+  .msg.user{ align-self:flex-end; background:var(--accent); color:#1a1408; border-bottom-right-radius:4px; }
+  .msg.assistant{ align-self:flex-start; background:var(--panel); border:1px solid var(--line); border-bottom-left-radius:4px; }
+  .msg.system{ align-self:center; color:var(--text-muted); font-size:12px; text-align:center; }
+
+  .inputbar{
+    flex-shrink:0; display:flex; gap:8px; align-items:center;
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    border-top:1px solid var(--line); background:var(--bg);
+  }
+  .inputbar input[type=text]{
+    flex:1; background:var(--panel); border:1px solid var(--line);
+    color:var(--text); border-radius:20px; padding:11px 16px;
+    font-size:15px; font-family:inherit; outline:none;
+  }
+  .inputbar input[type=text]:focus{ border-color:var(--accent-dim); }
+  .iconbtn{
+    width:42px; height:42px; border-radius:50%; border:none;
+    background:var(--panel-raised); color:var(--text);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex-shrink:0; font-size:18px;
+  }
+  .iconbtn.mic.listening{ background:var(--danger); color:#fff; animation:pulse 1.2s infinite; }
+  .iconbtn.send{ background:var(--accent); color:#1a1408; }
+  @keyframes pulse{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.08);} }
+
+  .listRow{ display:flex; align-items:flex-start; gap:10px; padding:12px 4px; border-bottom:1px solid var(--line); }
+  .listRow .check{
+    width:20px; height:20px; border-radius:6px; border:1.5px solid var(--text-muted);
+    flex-shrink:0; margin-top:2px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px;
+  }
+  .listRow.done .check{ background:var(--accent); border-color:var(--accent); color:#1a1408; }
+  .listRow.done .rowtext{ text-decoration:line-through; color:var(--text-muted); }
+  .rowtext{ flex:1; font-size:15px; line-height:1.4; word-break:break-word; }
+  .rowdel{ color:var(--text-muted); cursor:pointer; font-size:13px; padding:2px 6px; flex-shrink:0; }
+  .empty{ color:var(--text-muted); font-size:14px; text-align:center; margin-top:40px; line-height:1.5; }
+  .addRow{ display:flex; gap:8px; padding:10px 4px 16px; }
+  .addRow input{
+    flex:1; background:var(--panel); border:1px solid var(--line); color:var(--text);
+    border-radius:12px; padding:10px 14px; font-size:15px; font-family:inherit; outline:none;
+  }
+  .addRow button{ background:var(--accent); color:#1a1408; border:none; border-radius:12px; padding:0 18px; font-size:14px; font-weight:500; cursor:pointer; }
+
+  nav{ flex-shrink:0; display:flex; border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom); background:var(--bg); }
+  nav button{ flex:1; background:none; border:none; color:var(--text-muted); padding:12px 0 10px; font-family:inherit; font-size:12px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  nav button.active{ color:var(--accent); }
+  nav .dot{ width:6px; height:6px; border-radius:50%; background:currentColor; opacity:0; }
+  nav button.active .dot{ opacity:1; }
+
+  .toggleRow{ display:flex; align-items:center; justify-content:space-between; padding:10px 4px; color:var(--text-muted); font-size:13px; }
+  .switch{ width:38px; height:22px; border-radius:11px; background:var(--panel-raised); position:relative; cursor:pointer; border:1px solid var(--line); flex-shrink:0; }
+  .switch .knob{ width:16px; height:16px; border-radius:50%; background:var(--text-muted); position:absolute; top:2px; left:2px; transition:all .15s; }
+  .switch.on{ background:var(--accent-dim); }
+  .switch.on .knob{ left:18px; background:var(--accent); }
+
+  .wakeInput, .keyInput{
+    width:100%; background:var(--panel); border:1px solid var(--line); color:var(--text);
+    border-radius:10px; padding:9px 12px; font-size:14px; font-family:inherit; outline:none; margin-top:8px;
+  }
+  .credit{ text-align:center; color:var(--text-muted); font-size:12px; padding:18px 0 4px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="name">Trevor</div>
+    <div class="sub" id="headerSub">your daily assistant</div>
+  </header>
+
+  <div class="hfStatus dot" id="hfStatus"></div>
+
+  <div class="view active" id="chatView"></div>
+
+  <div class="view" id="tasksView">
+    <div class="addRow">
+      <input id="taskInput" type="text" placeholder="Add a task…">
+      <button onclick="addTask()">Add</button>
+    </div>
+    <div id="taskList"></div>
+  </div>
+
+  <div class="view" id="notesView">
+    <div class="addRow">
+      <input id="noteInput" type="text" placeholder="Add a note…">
+      <button onclick="addNote()">Add</button>
+    </div>
+    <div id="noteList"></div>
+  </div>
+
+  <div class="view" id="settingsView">
+    <div class="toggleRow">
+      <span>Hey Trevor (hands-free)</span>
+      <div class="switch" id="hfSwitch" onclick="toggleHandsFree()"><div class="knob"></div></div>
+    </div>
+    <div style="padding:0 4px 14px;">
+      <span style="color:var(--text-muted); font-size:13px;">Wake phrase</span>
+      <input class="wakeInput" id="wakeWordInput" type="text" value="hey trevor" onchange="setWakeWord(this.value)">
+    </div>
+
+    <div class="toggleRow" style="border-top:1px solid var(--line); padding-top:14px;">
+      <span>Speak replies out loud</span>
+      <div class="switch" id="voiceOutSwitch" onclick="toggleVoiceOut()"><div class="knob"></div></div>
+    </div>
+
+    <div style="border-top:1px solid var(--line); padding:14px 4px 4px;">
+      <span style="color:var(--text-muted); font-size:13px;">Anthropic API key (for chat replies)</span>
+      <input class="keyInput" id="apiKeyInput" type="password" placeholder="sk-ant-..." onchange="setApiKey(this.value)">
+      <p class="empty" style="margin:10px 0 0; text-align:left;">Stored only in this browser on this device — never saved into the app's code, never uploaded anywhere. Get a key at console.anthropic.com. Voice, tasks and notes all work without one.</p>
+    </div>
+
+    <div class="toggleRow" style="border-top:1px solid var(--line); margin-top:10px; padding-top:14px; flex-direction:column; align-items:flex-start; gap:8px;">
+      <span>Clear all data on this device</span>
+      <button class="iconbtn" style="width:auto; border-radius:10px; padding:8px 14px; font-size:13px; background:var(--danger); color:#fff;" onclick="clearAll()">Clear tasks, notes, chat &amp; key</button>
+    </div>
+
+    <div class="credit">Trevor — voice assistant<br>made by Adwait Suryawanshi</div>
+  </div>
+
+  <div class="inputbar" id="chatInputBar">
+    <button class="iconbtn mic" id="micBtn" onclick="toggleMic()">🎙️</button>
+    <input type="text" id="chatInput" placeholder="Ask Trevor anything…" onkeydown="if(event.key==='Enter')sendMessage()">
+    <button class="iconbtn send" onclick="sendMessage()">➤</button>
+  </div>
+
+  <nav>
+    <button class="tabbtn active" data-tab="chat" onclick="switchTab('chat')"><span>💬</span>Chat<span class="dot"></span></button>
+    <button class="tabbtn" data-tab="tasks" onclick="switchTab('tasks')"><span>✓</span>Tasks<span class="dot"></span></button>
+    <button class="tabbtn" data-tab="notes" onclick="switchTab('notes')"><span>✎</span>Notes<span class="dot"></span></button>
+    <button class="tabbtn" data-tab="settings" onclick="switchTab('settings')"><span>⚙</span>Settings<span class="dot"></span></button>
+  </nav>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

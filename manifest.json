@@ -1,0 +1,14 @@
+{
+  "name": "Trevor",
+  "short_name": "Trevor",
+  "description": "Trevor — a voice-activated daily assistant. Made by Adwait Suryawanshi.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#10121A",
+  "theme_color": "#10121A",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
