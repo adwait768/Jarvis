@@ -1,0 +1,1 @@
+The wrapper JAR could not be downloaded during package creation. AndroidIDE may install its default wrapper automatically.
