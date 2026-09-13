@@ -2,185 +2,47 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#10121A">
-<title>Trevor</title>
-<link rel="manifest" href="manifest.json">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#02070d">
+<title>JARVIS AI</title>
 <style>
-  :root{
-    --bg: #10121A;
-    --panel: #191C27;
-    --panel-raised: #20232F;
-    --line: #2B2F3D;
-    --text: #ECEAE3;
-    --text-muted: #8A8D9A;
-    --accent: #E0A458;
-    --accent-dim: #7A6339;
-    --danger: #C97064;
-  }
-  *{box-sizing:border-box;}
-  html,body{
-    margin:0; padding:0; height:100%;
-    background:var(--bg); color:var(--text);
-    font-family:'Space Grotesk', sans-serif;
-    -webkit-tap-highlight-color: transparent;
-    overscroll-behavior:none;
-  }
-  #app{
-    display:flex; flex-direction:column;
-    height:100vh; height:100dvh;
-    max-width:520px; margin:0 auto;
-    background:var(--bg);
-  }
-  header{ padding:18px 20px 14px; border-bottom:1px solid var(--line); flex-shrink:0; }
-  header .name{ font-family:'Fraunces', serif; font-size:26px; font-weight:600; letter-spacing:0.2px; }
-  header .sub{ color:var(--text-muted); font-size:13px; margin-top:2px; }
-
-  .hfStatus{
-    display:none; text-align:center; font-size:12.5px; color:var(--accent);
-    padding:8px 12px; background:var(--panel); border-bottom:1px solid var(--line);
-    flex-shrink:0; letter-spacing:0.2px;
-  }
-  .hfStatus.dot::before{ content:'● '; }
-
-  .view{ flex:1; overflow-y:auto; display:none; padding:16px; }
-  .view.active{ display:flex; flex-direction:column; }
-
-  #chatView{ gap:12px; }
-  .msg{ max-width:82%; padding:10px 14px; border-radius:16px; line-height:1.4; font-size:15px; white-space:pre-wrap; }
-  .msg.user{ align-self:flex-end; background:var(--accent); color:#1a1408; border-bottom-right-radius:4px; }
-  .msg.assistant{ align-self:flex-start; background:var(--panel); border:1px solid var(--line); border-bottom-left-radius:4px; }
-  .msg.system{ align-self:center; color:var(--text-muted); font-size:12px; text-align:center; }
-
-  .inputbar{
-    flex-shrink:0; display:flex; gap:8px; align-items:center;
-    padding:12px 16px calc(12px + env(safe-area-inset-bottom));
-    border-top:1px solid var(--line); background:var(--bg);
-  }
-  .inputbar input[type=text]{
-    flex:1; background:var(--panel); border:1px solid var(--line);
-    color:var(--text); border-radius:20px; padding:11px 16px;
-    font-size:15px; font-family:inherit; outline:none;
-  }
-  .inputbar input[type=text]:focus{ border-color:var(--accent-dim); }
-  .iconbtn{
-    width:42px; height:42px; border-radius:50%; border:none;
-    background:var(--panel-raised); color:var(--text);
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer; flex-shrink:0; font-size:18px;
-  }
-  .iconbtn.mic.listening{ background:var(--danger); color:#fff; animation:pulse 1.2s infinite; }
-  .iconbtn.send{ background:var(--accent); color:#1a1408; }
-  @keyframes pulse{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.08);} }
-
-  .listRow{ display:flex; align-items:flex-start; gap:10px; padding:12px 4px; border-bottom:1px solid var(--line); }
-  .listRow .check{
-    width:20px; height:20px; border-radius:6px; border:1.5px solid var(--text-muted);
-    flex-shrink:0; margin-top:2px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px;
-  }
-  .listRow.done .check{ background:var(--accent); border-color:var(--accent); color:#1a1408; }
-  .listRow.done .rowtext{ text-decoration:line-through; color:var(--text-muted); }
-  .rowtext{ flex:1; font-size:15px; line-height:1.4; word-break:break-word; }
-  .rowdel{ color:var(--text-muted); cursor:pointer; font-size:13px; padding:2px 6px; flex-shrink:0; }
-  .empty{ color:var(--text-muted); font-size:14px; text-align:center; margin-top:40px; line-height:1.5; }
-  .addRow{ display:flex; gap:8px; padding:10px 4px 16px; }
-  .addRow input{
-    flex:1; background:var(--panel); border:1px solid var(--line); color:var(--text);
-    border-radius:12px; padding:10px 14px; font-size:15px; font-family:inherit; outline:none;
-  }
-  .addRow button{ background:var(--accent); color:#1a1408; border:none; border-radius:12px; padding:0 18px; font-size:14px; font-weight:500; cursor:pointer; }
-
-  nav{ flex-shrink:0; display:flex; border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom); background:var(--bg); }
-  nav button{ flex:1; background:none; border:none; color:var(--text-muted); padding:12px 0 10px; font-family:inherit; font-size:12px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; }
-  nav button.active{ color:var(--accent); }
-  nav .dot{ width:6px; height:6px; border-radius:50%; background:currentColor; opacity:0; }
-  nav button.active .dot{ opacity:1; }
-
-  .toggleRow{ display:flex; align-items:center; justify-content:space-between; padding:10px 4px; color:var(--text-muted); font-size:13px; }
-  .switch{ width:38px; height:22px; border-radius:11px; background:var(--panel-raised); position:relative; cursor:pointer; border:1px solid var(--line); flex-shrink:0; }
-  .switch .knob{ width:16px; height:16px; border-radius:50%; background:var(--text-muted); position:absolute; top:2px; left:2px; transition:all .15s; }
-  .switch.on{ background:var(--accent-dim); }
-  .switch.on .knob{ left:18px; background:var(--accent); }
-
-  .wakeInput, .keyInput{
-    width:100%; background:var(--panel); border:1px solid var(--line); color:var(--text);
-    border-radius:10px; padding:9px 12px; font-size:14px; font-family:inherit; outline:none; margin-top:8px;
-  }
-  .credit{ text-align:center; color:var(--text-muted); font-size:12px; padding:18px 0 4px; }
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#02070d;color:#dff8ff;font-family:Arial,sans-serif}body{overflow:hidden}.app{height:100dvh;max-width:520px;margin:auto;display:flex;flex-direction:column;background:radial-gradient(circle at 50% 20%,#07334b 0,#06131e 28%,#02070d 65%);padding:16px}.top{display:flex;justify-content:space-between;align-items:center}.brand{font-size:27px;font-weight:bold;letter-spacing:7px;text-shadow:0 0 15px #19cfff}.online{font-size:11px;letter-spacing:2px;color:#55e6ff}.core{width:190px;height:190px;margin:20px auto 10px;border:2px solid #20d7ff;border-radius:50%;position:relative;display:grid;place-items:center;box-shadow:0 0 24px #008fc7,inset 0 0 25px #008fc7}.core:before,.core:after{content:"";position:absolute;border:2px solid #168db8;border-radius:50%}.core:before{inset:17px}.core:after{inset:40px}.ring{position:absolute;inset:7px;border:1px dashed #26bce4;border-radius:50%;animation:spin 9s linear infinite}.ring2{inset:27px;animation:spin 6s linear infinite reverse}.orb{width:62px;height:62px;border-radius:50%;background:#d9fbff;box-shadow:0 0 28px #00cfff,0 0 65px #007dff;animation:pulse 2s ease-in-out infinite}.greet{text-align:center;font-size:21px;font-weight:bold}.sub{text-align:center;color:#78a8b8;font-size:13px;margin:5px 0 10px}.statusbar{display:flex;justify-content:center;gap:12px;font-size:10px;letter-spacing:1px;color:#63dfff;margin-bottom:6px}.chat{flex:1;min-height:120px;overflow:auto;padding:4px 2px 8px}.msg{padding:11px 13px;margin:7px 0;border-radius:15px;max-width:88%;line-height:1.4;font-size:15px;white-space:pre-wrap}.jarvis{background:#0b1d29;border:1px solid #17465b}.you{background:#075b85;margin-left:auto;color:#fff}.controls{display:flex;gap:8px}.input{flex:1;background:#08131d;border:1px solid #205066;color:#fff;border-radius:14px;padding:13px;outline:none;font-size:15px}.btn{border:0;border-radius:14px;background:#079bd6;color:white;font-weight:bold;padding:0 15px}.mic{display:block;margin:10px auto 8px;width:66px;height:66px;border-radius:50%;border:2px solid #25d7ff;background:#06486a;color:#fff;font-size:27px;box-shadow:0 0 22px #007bb5}.mic.listening{background:#b33b45;animation:pulse 1s infinite}.quick{display:flex;gap:7px;overflow:auto;padding-bottom:4px}.quick button{white-space:nowrap;background:#091a25;color:#8feaff;border:1px solid #205067;border-radius:18px;padding:8px 12px}small{color:#7095a3}@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{transform:scale(1.07);filter:brightness(1.25)}}
 </style>
 </head>
 <body>
-<div id="app">
-  <header>
-    <div class="name">Trevor</div>
-    <div class="sub" id="headerSub">your daily assistant</div>
-  </header>
-
-  <div class="hfStatus dot" id="hfStatus"></div>
-
-  <div class="view active" id="chatView"></div>
-
-  <div class="view" id="tasksView">
-    <div class="addRow">
-      <input id="taskInput" type="text" placeholder="Add a task…">
-      <button onclick="addTask()">Add</button>
-    </div>
-    <div id="taskList"></div>
-  </div>
-
-  <div class="view" id="notesView">
-    <div class="addRow">
-      <input id="noteInput" type="text" placeholder="Add a note…">
-      <button onclick="addNote()">Add</button>
-    </div>
-    <div id="noteList"></div>
-  </div>
-
-  <div class="view" id="settingsView">
-    <div class="toggleRow">
-      <span>Hey Trevor (hands-free)</span>
-      <div class="switch" id="hfSwitch" onclick="toggleHandsFree()"><div class="knob"></div></div>
-    </div>
-    <div style="padding:0 4px 14px;">
-      <span style="color:var(--text-muted); font-size:13px;">Wake phrase</span>
-      <input class="wakeInput" id="wakeWordInput" type="text" value="hey trevor" onchange="setWakeWord(this.value)">
-    </div>
-
-    <div class="toggleRow" style="border-top:1px solid var(--line); padding-top:14px;">
-      <span>Speak replies out loud</span>
-      <div class="switch" id="voiceOutSwitch" onclick="toggleVoiceOut()"><div class="knob"></div></div>
-    </div>
-
-    <div style="border-top:1px solid var(--line); padding:14px 4px 4px;">
-      <span style="color:var(--text-muted); font-size:13px;">Anthropic API key (for chat replies)</span>
-      <input class="keyInput" id="apiKeyInput" type="password" placeholder="sk-ant-..." onchange="setApiKey(this.value)">
-      <p class="empty" style="margin:10px 0 0; text-align:left;">Stored only in this browser on this device — never saved into the app's code, never uploaded anywhere. Get a key at console.anthropic.com. Voice, tasks and notes all work without one.</p>
-    </div>
-
-    <div class="toggleRow" style="border-top:1px solid var(--line); margin-top:10px; padding-top:14px; flex-direction:column; align-items:flex-start; gap:8px;">
-      <span>Clear all data on this device</span>
-      <button class="iconbtn" style="width:auto; border-radius:10px; padding:8px 14px; font-size:13px; background:var(--danger); color:#fff;" onclick="clearAll()">Clear tasks, notes, chat &amp; key</button>
-    </div>
-
-    <div class="credit">Trevor — voice assistant<br>made by Adwait Suryawanshi</div>
-  </div>
-
-  <div class="inputbar" id="chatInputBar">
-    <button class="iconbtn mic" id="micBtn" onclick="toggleMic()">🎙️</button>
-    <input type="text" id="chatInput" placeholder="Ask Trevor anything…" onkeydown="if(event.key==='Enter')sendMessage()">
-    <button class="iconbtn send" onclick="sendMessage()">➤</button>
-  </div>
-
-  <nav>
-    <button class="tabbtn active" data-tab="chat" onclick="switchTab('chat')"><span>💬</span>Chat<span class="dot"></span></button>
-    <button class="tabbtn" data-tab="tasks" onclick="switchTab('tasks')"><span>✓</span>Tasks<span class="dot"></span></button>
-    <button class="tabbtn" data-tab="notes" onclick="switchTab('notes')"><span>✎</span>Notes<span class="dot"></span></button>
-    <button class="tabbtn" data-tab="settings" onclick="switchTab('settings')"><span>⚙</span>Settings<span class="dot"></span></button>
-  </nav>
+<div class="app">
+<div class="top"><div class="brand">JARVIS</div><div class="online">● ONLINE</div></div>
+<div class="core"><div class="ring"></div><div class="ring ring2"></div><div class="orb"></div></div>
+<div class="greet">Hello, I'm JARVIS.</div><div class="sub">Your personal AI assistant</div>
+<div class="statusbar"><span>CORE ONLINE</span><span id="voiceStatus">VOICE READY</span><span>LOCAL MODE</span></div>
+<div id="chat" class="chat"><div class="msg jarvis">Good evening. Systems online. How can I help you?</div></div>
+<div class="controls"><input id="input" class="input" placeholder="Ask JARVIS..." autocomplete="off"><button class="btn" onclick="send()">SEND</button></div>
+<button id="mic" class="mic" onclick="toggleMic()">🎙️</button>
+<div class="quick"><button onclick="ask('What time is it?')">Time</button><button onclick="ask('What is today?')">Date</button><button onclick="ask('System status')">Status</button><button onclick="openYT()">YouTube</button><button onclick="searchWeb()">Search</button><button onclick="ask('Help')">Help</button></div>
 </div>
-
-<script src="app.js"></script>
+<script>
+const chat=document.getElementById('chat'),input=document.getElementById('input'),mic=document.getElementById('mic'),voiceStatus=document.getElementById('voiceStatus');
+function add(t,c){const d=document.createElement('div');d.className='msg '+c;d.textContent=t;chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
+function ask(t){input.value=t;send()}
+function speak(t){if('speechSynthesis'in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(t))}}
+function calc(expr){try{if(!/^[0-9+\-*/().%\s]+$/.test(expr))return null;return Function('"use strict";return ('+expr+')')()}catch(e){return null}}
+function reply(t){const x=t.toLowerCase().trim();let r='';
+if(/\b(hello|hi|hey)\b/.test(x))r='Hello. JARVIS is online and ready.';
+else if(x.includes('time'))r='The current time is '+new Date().toLocaleTimeString();
+else if(x.includes('date')||x.includes('today'))r='Today is '+new Date().toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+else if(x.includes('status'))r='All core systems are online. Mode: local browser intelligence.';
+else if(x.includes('who are you')||x.includes('what are you'))r='I am JARVIS, your browser-based personal assistant.';
+else if(x.includes('youtube')){openYT();r='Opening YouTube.'}
+else if(x.startsWith('search ')){const q=t.slice(7).trim();window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank');r='Searching the web for '+q+'.'}
+else if(x==='help'||x.includes('what can you do'))r='I can tell the time and date, calculate expressions, open YouTube, search the web, use voice input, and handle local commands. More intelligence can be added next.';
+else {const cleaned=t.replace(/^calculate\s+/i,'').replace(/^what is\s+/i,'').trim();const n=calc(cleaned);if(n!==null&&cleaned!==t||n!==null&&/^[0-9+\-*/().%\s]+$/.test(t))r='The answer is '+n+'.';else r='I received your command. My local brain does not know that one yet.'}
+return r}
+function send(){const t=input.value.trim();if(!t)return;add(t,'you');input.value='';const r=reply(t);setTimeout(()=>{add(r,'jarvis');speak(r)},220)}
+function openYT(){window.open('https://www.youtube.com','_blank')}
+function searchWeb(){const q=prompt('What should JARVIS search for?');if(q)window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank')}
+let recognition=null,listening=false;
+function toggleMic(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){add('Voice recognition is not supported in this browser. Try Chrome over HTTPS.','jarvis');return}if(listening){recognition.stop();return}recognition=new R();recognition.lang='en-IN';recognition.interimResults=false;recognition.continuous=false;recognition.onstart=()=>{listening=true;mic.classList.add('listening');voiceStatus.textContent='VOICE LISTENING'};recognition.onresult=e=>{input.value=e.results[0][0].transcript;send()};recognition.onerror=e=>{add('Microphone error: '+e.error,'jarvis')};recognition.onend=()=>{listening=false;mic.classList.remove('listening');voiceStatus.textContent='VOICE READY'};recognition.start()}
+input.addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+</script>
 </body>
 </html>
