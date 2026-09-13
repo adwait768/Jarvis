@@ -48,3 +48,11 @@ Usage of the Claude API is paid per request (typically fractions of a cent for s
 - Change the wake phrase any time in Settings — no code edit needed.
 - Colors and fonts live in the `<style>` block at the top of `index.html`.
 - `sw.js` caches the app shell for offline use; it always skips the cache for actual AI requests so replies stay live.
+
+## Android APK build
+
+The native Android project is committed directly in this repository. Open the
+repository root in Android Studio or AndroidIDE—there is no project archive to
+extract. Build the `app` module with JDK 17, Android API 36, build-tools 36.0.0,
+and Gradle 8.13. The debug APK is written to
+`app/build/outputs/apk/debug/app-debug.apk`.
