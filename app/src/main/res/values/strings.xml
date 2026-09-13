@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">JARVIS</string>
+    <string name="voice_not_available">Voice recognition is not available on this device.</string>
+</resources>
