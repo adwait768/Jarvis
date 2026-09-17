@@ -1,6 +1,5 @@
-JARVIS v1 AndroidIDE-ready project.
+JARVIS Android project
 
-1. Extract this ZIP.
-2. Open the extracted JARVIS_ANDROIDIDE_READY folder in AndroidIDE.
-3. Use Run/Build. The project includes gradlew and a wrapper launcher.
-4. The first build may download the Gradle 8.13 runtime, so keep internet on.
+Open this repository root directly in AndroidIDE or Android Studio. The Android
+project is checked in under app/; no archive needs to be extracted. Use JDK 17,
+Android API 36, build-tools 36.0.0, and Gradle 8.13 to build the debug APK.
