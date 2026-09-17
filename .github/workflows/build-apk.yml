@@ -3,7 +3,7 @@ name: Build JARVIS APK
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+  pull_request:
 
 jobs:
   build:
@@ -21,17 +21,26 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: true
+
+      - name: Install Android API 36 build requirements
+        run: sdkmanager --install "platforms;android-36" "build-tools;36.0.0"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.13'
 
+      - name: Extract Android project
+        run: unzip -q JARVIS_v1_ANDROIDIDE_READY.zip -d android-project
+
       - name: Build APK
+        working-directory: android-project
         run: gradle assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: JARVIS-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: android-project/app/build/outputs/apk/debug/app-debug.apk
