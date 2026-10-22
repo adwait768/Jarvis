@@ -3,106 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#02070c">
-<title>JARVIS AI</title>
+<meta name="theme-color" content="#0b0c0f">
+<title>768 AI — 768 Community</title>
+<link rel="manifest" href="manifest.json">
+<meta name="description" content="768 AI — your personal assistant by 768 Community">
 
 <style>
-*{box-sizing:border-box}
-body{
-margin:0;background:#02060a;color:#dffaff;
-font-family:Arial,sans-serif;min-height:100vh
-}
-.app{
-max-width:520px;min-height:100vh;margin:auto;padding:18px;
-display:flex;flex-direction:column;
-background:radial-gradient(circle at 50% 22%,#073b59,#06151f 30%,#02060a 70%)
-}
-.header{display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:29px;font-weight:bold;letter-spacing:7px;text-shadow:0 0 15px #00bfff}
-.online{font-size:11px;color:#36dcff;letter-spacing:2px}
+:root{color-scheme:dark;--bg:#0b0c0f;--surface:#14161b;--line:#292d35;--text:#f5f7fa;--muted:#9299a6;--blue:#55bfff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input{font:inherit}button{cursor:pointer;transition:background .18s,border-color .18s,transform .18s}button:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.app{max-width:520px;min-height:100vh;margin:auto;padding:22px 18px 26px;display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% 15%,rgba(85,191,255,.075),transparent 38%),var(--bg)}
+.header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:3px 1px}.logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:750;letter-spacing:-.7px}.brandmark{width:32px;height:32px;border:1px solid #3b6179;border-radius:11px;display:grid;place-items:center;color:var(--blue);font-size:12px;font-weight:800;letter-spacing:-.7px;background:#141a20}.online{font-size:10px;color:#a8e4ff;letter-spacing:1.5px;border:1px solid #244052;background:rgba(85,191,255,.12);padding:7px 9px;border-radius:99px}
+.reactor{width:164px;height:164px;margin:34px auto 22px;border:1px solid rgba(85,191,255,.42);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 0 12px rgba(85,191,255,.025),inset 0 0 35px rgba(85,191,255,.055)}.ring{position:absolute;border-radius:50%;border:1px solid rgba(85,191,255,.32)}.r1{width:136px;height:136px;border-left-color:transparent;animation:spin 16s linear infinite}.r2{width:108px;height:108px;border-right-color:transparent;animation:rev 19s linear infinite}.r3{width:80px;height:80px;border-top-color:transparent;animation:spin 22s linear infinite}.r4{width:56px;height:56px;border-bottom-color:transparent;opacity:.65}.core{width:26px;height:26px;border-radius:50%;background:#eaf8ff;box-shadow:0 0 18px rgba(85,191,255,.7),0 0 42px rgba(85,191,255,.2);z-index:5}
+.title{text-align:center;font-size:25px;letter-spacing:-.8px;font-weight:700}.subtitle{text-align:center;font-size:13px;color:var(--muted);margin:8px 0 21px}
+.system{display:flex;justify-content:space-around;gap:8px;margin:4px 0 13px;padding:13px 8px;border:1px solid var(--line);border-radius:16px;background:rgba(20,22,27,.78);font-size:10px;letter-spacing:1.2px;color:var(--muted)}.system span{display:block;text-align:center;margin-top:7px;color:var(--text);font-size:11px;letter-spacing:.5px}
+.chat{flex:1;min-height:190px;max-height:280px;overflow-y:auto;padding:6px 1px;scrollbar-width:thin;scrollbar-color:#343943 transparent}.message{padding:12px 14px;margin:9px 0;border-radius:16px;max-width:88%;line-height:1.5;font-size:14px;white-space:pre-wrap}.jarvis{background:var(--surface);border:1px solid var(--line);color:#e8ebf0;border-top-left-radius:5px}.user{background:#17374a;border:1px solid #28516a;margin-left:auto;border-top-right-radius:5px}
+.controls{display:flex;gap:8px;margin-top:10px}input{flex:1;min-width:0;padding:14px 15px;border-radius:14px;border:1px solid var(--line);background:#111318;color:var(--text);font-size:14px;outline:none}input::placeholder{color:#737b88}input:focus{border-color:#4b91b8;box-shadow:0 0 0 3px rgba(85,191,255,.08)}.send{border:1px solid #3d9bd0;border-radius:14px;padding:0 16px;background:var(--blue);color:#07111a;font-size:12px;letter-spacing:.8px;font-weight:800}.send:hover{background:#8bd3ff}
+.mic{width:62px;height:62px;margin:14px auto;border-radius:50%;border:1px solid #38617a;background:#141e27;color:#dff5ff;font-size:23px;box-shadow:0 0 0 6px rgba(85,191,255,.04)}.mic:hover,.mic.listening{background:#1a3b50;border-color:var(--blue);box-shadow:0 0 0 7px rgba(85,191,255,.08)}.mic.listening{transform:scale(1.04)}
+.quick{display:flex;gap:7px;overflow-x:auto;padding:3px 0 7px;scrollbar-width:none}.quick::-webkit-scrollbar{display:none}.quick button{white-space:nowrap;padding:9px 12px;border-radius:99px;border:1px solid var(--line);background:#14161b;color:#c4cbd5;font-size:12px}.quick button:hover{border-color:#426b83;color:#dff5ff;background:#18212a}
+.panel{margin-top:12px;padding:15px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}.panel-title{font-size:10px;letter-spacing:1.7px;color:var(--muted);margin-bottom:9px}.row{display:flex;justify-content:space-between;gap:16px;font-size:12px;padding:7px 0;color:var(--muted)}.row b{color:#e7ebf1;font-weight:550}
+#splash{position:fixed;inset:0;z-index:20;background:#0b0c0f;display:flex;align-items:center;justify-content:center;transition:opacity .25s ease,visibility .25s ease}#splash.hidden{opacity:0;visibility:hidden;pointer-events:none}.splash-inner{text-align:center}.splash-mark{width:70px;height:70px;margin:0 auto 18px;border:1px solid #3b6179;border-radius:22px;display:grid;place-items:center;color:var(--blue);font-size:22px;font-weight:800;letter-spacing:-1px;background:#141a20;box-shadow:0 0 35px rgba(85,191,255,.08)}.splash-name{font-size:24px;font-weight:750;letter-spacing:-.8px}.splash-by{margin-top:7px;font-size:12px;color:var(--muted)}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}@keyframes rev{from{transform:rotate(360deg)}to{transform:rotate(0)}}@media(max-height:740px){.reactor{width:132px;height:132px;margin:20px auto 16px}.r1{width:110px;height:110px}.r2{width:88px;height:88px}.r3{width:66px;height:66px}.r4{width:46px;height:46px}.chat{min-height:130px}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 
-.reactor{
-width:205px;height:205px;margin:27px auto 15px;
-border:2px solid #16c9ff;border-radius:50%;
-display:flex;align-items:center;justify-content:center;
-position:relative;box-shadow:0 0 25px #008dcc,inset 0 0 25px #008dcc;
-animation:pulse 2s infinite
-}
-.ring{position:absolute;border-radius:50%;border:2px solid #168dbd}
-.r1{width:170px;height:170px;border-left-color:transparent;animation:spin 5s linear infinite}
-.r2{width:135px;height:135px;border-right-color:transparent;animation:rev 3s linear infinite}
-.r3{width:98px;height:98px;border-top-color:transparent;animation:spin 2s linear infinite}
-.r4{width:72px;height:72px;border-bottom-color:transparent;animation:rev 1.5s linear infinite}
-.core{
-width:48px;height:48px;border-radius:50%;background:#e8fcff;
-box-shadow:0 0 20px #00c8ff,0 0 50px #008cff;
-z-index:5;animation:glow 1.2s infinite alternate
-}
-
-.title{text-align:center;font-size:22px;font-weight:bold}
-.subtitle{text-align:center;font-size:13px;color:#78a7b9;margin:5px 0 14px}
-
-.system{
-display:flex;justify-content:space-around;margin:10px 0;padding:10px;
-border:1px solid #173c4d;border-radius:12px;background:#07131b;
-font-size:10px;color:#70c8df
-}
-.system span{display:block;text-align:center;margin-top:4px;color:#dffaff}
-
-.chat{flex:1;min-height:240px;max-height:300px;overflow-y:auto;padding:5px}
-.message{
-padding:12px 14px;margin:8px 0;border-radius:15px;
-max-width:88%;line-height:1.4;font-size:14px
-}
-.jarvis{background:#0d202c;border:1px solid #205064}
-.user{background:#075d8d;margin-left:auto}
-
-.controls{display:flex;gap:7px;margin-top:7px}
-input{
-flex:1;min-width:0;padding:14px;border-radius:14px;
-border:1px solid #25536a;background:#09141c;color:white;
-font-size:14px;outline:none
-}
-input:focus{border-color:#20caff;box-shadow:0 0 10px #006f9c}
-.send{
-border:0;border-radius:14px;padding:0 16px;
-background:#078ed0;color:white;font-weight:bold
-}
-
-.mic{
-width:78px;height:78px;margin:13px auto;border-radius:50%;
-border:2px solid #20caff;background:#064b70;color:white;font-size:28px;
-box-shadow:0 0 22px #007db7
-}
-.mic.listening{background:#087ca8;transform:scale(1.08);box-shadow:0 0 35px #00c8ff}
-
-.quick{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px}
-.quick button{
-white-space:nowrap;padding:9px 13px;border-radius:20px;
-border:1px solid #21495c;background:#0b1b25;color:#8edfff
-}
-
-.panel{
-margin-top:12px;padding:12px;border:1px solid #173c4d;
-border-radius:13px;background:#07131b
-}
-.panel-title{font-size:11px;letter-spacing:2px;color:#36cfff;margin-bottom:7px}
-.row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;color:#86aebb}
-.row b{color:#dffaff}
-
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-@keyframes rev{from{transform:rotate(360deg)}to{transform:rotate(0)}}
-@keyframes pulse{50%{box-shadow:0 0 50px #00bfff,inset 0 0 35px #008dcc}}
-@keyframes glow{from{transform:scale(1)}to{transform:scale(1.18)}}
 </style>
 </head>
 
 <body>
+<div id="splash" aria-label="768 AI launching"><div class="splash-inner"><div class="splash-mark">768</div><div class="splash-name">768 AI</div><div class="splash-by">by 768 Community</div></div></div>
 
 <div class="app">
 
 <div class="header">
-<div class="logo">JARVIS</div>
+<div class="logo"><span class="brandmark">768</span><span>768 AI</span></div>
 <div class="online">● ONLINE</div>
 </div>
 
@@ -114,8 +46,8 @@ border-radius:13px;background:#07131b
 <div class="core"></div>
 </div>
 
-<div class="title">Hello, I'm JARVIS.</div>
-<div class="subtitle">Personal command assistant</div>
+<div class="title">Hello, I’m 768 AI.</div>
+<div class="subtitle">Your personal assistant · 768 Community</div>
 
 <div class="system">
 <div>SYSTEM<span>ONLINE</span></div>
@@ -125,13 +57,13 @@ border-radius:13px;background:#07131b
 
 <div id="chat" class="chat">
 <div class="message jarvis">
-Good evening. All systems are online.<br>
-Awaiting your command.
+Welcome to 768 AI. All systems are online.<br>
+Ready when you are.
 </div>
 </div>
 
 <div class="controls">
-<input id="input" placeholder="Ask JARVIS..." autocomplete="off">
+<input id="input" placeholder="Ask 768 AI..." autocomplete="off">
 <button class="send" onclick="send()">SEND</button>
 </div>
 
@@ -148,7 +80,7 @@ Awaiting your command.
 
 <div class="panel">
 <div class="panel-title">SYSTEM INFORMATION</div>
-<div class="row"><span>Assistant</span><b>JARVIS</b></div>
+<div class="row"><span>Assistant</span><b>768 AI</b></div>
 <div class="row"><span>Engine</span><b>LOCAL</b></div>
 <div class="row"><span>Clock</span><b id="clock">--:--</b></div>
 <div class="row"><span>Browser</span><b id="browser">WEB</b></div>
@@ -194,7 +126,7 @@ const c=text.toLowerCase();
 let reply="";
 
 if(c.includes("hello")||c.includes("hi")||c.includes("hey")){
-reply="Hello. JARVIS is online and ready.";
+reply="Hello. 768 AI is online and ready.";
 }
 
 else if(c.includes("time")){
@@ -213,7 +145,7 @@ reply="System status: online. Voice engine ready. Local command engine operation
 }
 
 else if(c.includes("who are you")){
-reply="I am JARVIS, your personal command assistant.";
+reply="I am 768 AI, your personal assistant by 768 Community.";
 }
 
 else if(c.includes("weather")){
@@ -339,7 +271,7 @@ window.open("https://www.youtube.com","_blank");
 
 function searchGoogle(){
 
-const q=prompt("What should JARVIS search for?");
+const q=prompt("What should 768 AI search for?");
 
 if(q){
 
@@ -361,6 +293,7 @@ new Date().toLocaleTimeString();
 
 setInterval(updateClock,1000);
 updateClock();
+window.addEventListener("load",()=>setTimeout(()=>document.getElementById("splash")?.classList.add("hidden"),650));
 
 input.addEventListener("keydown",function(e){
 
