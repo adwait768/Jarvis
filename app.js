@@ -9,7 +9,7 @@ let recognition = null;
 let listening = false;
 
 let handsFree = false;
-let wakeWord = 'hey trevor';
+let wakeWord = 'hey 768 ai';
 let hfRecognition = null;
 let hfState = 'idle'; // idle | awaiting | thinking | speaking
 let suspendHF = false;
@@ -30,7 +30,7 @@ function loadAll(){
   chatHistory = loadJSON('trevor-chat', []);
   voiceOut = loadJSON('trevor-voiceout', false);
   handsFree = loadJSON('trevor-handsfree', false);
-  wakeWord = loadJSON('trevor-wakeword', 'hey trevor');
+  wakeWord = loadJSON('trevor-wakeword', 'hey 768 ai');
   apiKey = loadJSON('trevor-apikey', '');
 
   renderTasks(); renderNotes(); renderChat(); renderVoiceSwitch(); renderHFSwitch();
@@ -94,7 +94,7 @@ async function fetchAIReply(excludeMsg){
     body: JSON.stringify({
       model:'claude-sonnet-4-6',
       max_tokens:1000,
-      system:'You are Trevor, a concise, friendly personal daily-assistant living in a small phone app, sometimes reached hands-free by voice. ' + context + ' Keep replies short and practical, mobile-screen length, and easy to read aloud. If the user asks to add/remove a task or note, tell them to use the Tasks/Notes tab, since you cannot edit them directly.',
+      system:'You are 768 AI, a concise, friendly personal daily-assistant living in a small phone app, sometimes reached hands-free by voice. ' + context + ' Keep replies short and practical, mobile-screen length, and easy to read aloud. If the user asks to add/remove a task or note, tell them to use the Tasks/Notes tab, since you cannot edit them directly.',
       messages: apiMessages
     })
   });
