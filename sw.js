@@ -1,4 +1,4 @@
-const CACHE_NAME = 'trevor-v1';
+const CACHE_NAME = '768-ai-v2';
 const ASSETS = ['./', './index.html', './app.js', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', (event) => {
