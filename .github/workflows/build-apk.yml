@@ -5,6 +5,9 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,26 +33,80 @@ jobs:
           gradle-version: '8.13'
 
       - name: Extract AndroidIDE project
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p android-project
           unzip -q JARVIS_v1_ANDROIDIDE_READY.zip -d android-project
-          PROJECT_DIR="$(find android-project -type f -name settings.gradle.kts -printf '%h\n' | head -n 1)"
-          if [ -z "$PROJECT_DIR" ]; then
-            echo "Could not find settings.gradle.kts inside JARVIS_v1_ANDROIDIDE_READY.zip"
-            find android-project -maxdepth 3 -type f | head -80
+
+          PROJECT_FILE="$(find android-project -type f -name settings.gradle.kts -print -quit)"
+          if [[ -z "$PROJECT_FILE" ]]; then
+            echo "::error::Could not find settings.gradle.kts inside JARVIS_v1_ANDROIDIDE_READY.zip"
+            find android-project -maxdepth 4 -type f | sort | head -100
             exit 1
           fi
+
+          PROJECT_DIR="$(dirname "$PROJECT_FILE")"
+          APP_GRADLE_FILE="$(find "$PROJECT_DIR" -type f \( -path '*/app/build.gradle.kts' -o -path '*/app/build.gradle' \) -print -quit)"
+          if [[ -z "$APP_GRADLE_FILE" ]]; then
+            echo "::error::Could not find the app module Gradle file"
+            find "$PROJECT_DIR" -maxdepth 4 -type f | sort | head -100
+            exit 1
+          fi
+
           echo "ANDROID_PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+          echo "APP_GRADLE_FILE=$APP_GRADLE_FILE" >> "$GITHUB_ENV"
           echo "Found Android project at: $PROJECT_DIR"
+          echo "Found app Gradle file at: $APP_GRADLE_FILE"
+
+      - name: Align Java and Kotlin JVM targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$APP_GRADLE_FILE" == *.kts ]]; then
+            cat >> "$APP_GRADLE_FILE" <<'EOF'
+
+          // CI compatibility: keep Java and Kotlin bytecode targets aligned.
+          tasks.withType<org.gradle.api.tasks.compile.JavaCompile>().configureEach {
+              sourceCompatibility = "17"
+              targetCompatibility = "17"
+          }
+          tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+              kotlinOptions.jvmTarget = "17"
+          }
+          EOF
+          else
+            cat >> "$APP_GRADLE_FILE" <<'EOF'
+
+          // CI compatibility: keep Java and Kotlin bytecode targets aligned.
+          tasks.withType(org.gradle.api.tasks.compile.JavaCompile).configureEach {
+              sourceCompatibility = '17'
+              targetCompatibility = '17'
+          }
+          tasks.matching { it.name.startsWith('compile') && it.name.endsWith('Kotlin') }.configureEach {
+              kotlinOptions.jvmTarget = '17'
+          }
+          EOF
+          fi
 
       - name: Build APK
+        shell: bash
         run: |
+          set -euo pipefail
           cd "$ANDROID_PROJECT_DIR"
-          gradle assembleDebug
+          gradle --no-daemon assembleDebug
+          APK_PATH="$(find . -type f -path '*/build/outputs/apk/debug/app-debug.apk' -print -quit)"
+          if [[ -z "$APK_PATH" ]]; then
+            echo "::error::Gradle completed but app-debug.apk was not produced"
+            find . -type f -path '*/build/outputs/apk/*' -print
+            exit 1
+          fi
+          echo "APK produced at: $ANDROID_PROJECT_DIR/$APK_PATH"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: 768-AI-debug-apk
-          path: android-project/**/app/build/outputs/apk/debug/app-debug.apk
+          path: android-project/**/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+          retention-days: 14
