@@ -33,7 +33,7 @@ jobs:
         run: |
           mkdir -p android-project
           unzip -q JARVIS_v1_ANDROIDIDE_READY.zip -d android-project
-          PROJECT_DIR="$(find android-project -type f -name settings.gradle.kts -printf '%h\\n' | head -n 1)"
+          PROJECT_DIR="$(find android-project -type f -name settings.gradle.kts -printf '%h\n' | head -n 1)"
           if [ -z "$PROJECT_DIR" ]; then
             echo "Could not find settings.gradle.kts inside JARVIS_v1_ANDROIDIDE_READY.zip"
             find android-project -maxdepth 3 -type f | head -80
